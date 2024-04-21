@@ -1,3 +1,18 @@
+// Create user input variables
+let number1 = "";
+let number2 = "";
+let operator = null;
+let display = document.querySelector("#display");
+
+/*
+Create function populateDisplay() to ensure the display text does not overflow.
+*/
+function populateDisplay() {
+  if (display.textContent.length > 10) {
+    display.textContent = display.textContent.substring(0, 10);
+  }
+}
+
 // Create basic arithmetic functions
 function add(num1, num2) {
   return num1 + num2;
@@ -11,11 +26,6 @@ function multiply(num1, num2) {
 function divide(num1, num2) {
   return num1 / num2;
 }
-
-// Create user input variables
-let number1 = "";
-let number2 = "";
-let operator = null;
 
 // Create function operate that takes two numbers and an operator, then based on the operator it calls one of the arithmetic functions.
 function operate(num1, op, num2) {
@@ -35,4 +45,12 @@ function operate(num1, op, num2) {
     default:
       null;
   }
+}
+
+// Create function clearAll(), if triggered, reset the entire calculator's state
+function clearAll() {
+  display.textContent = "";
+  number1 = "";
+  number2 = "";
+  operator = null;
 }
