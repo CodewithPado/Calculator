@@ -2,6 +2,7 @@
 let number1 = "";
 let number2 = "";
 let operator = null;
+let result = 0;
 const maxLength = 10;
 let display = document.querySelector("#display");
 
@@ -40,35 +41,45 @@ function appendNumberOrDecimal(input) {
 
 // Create basic arithmetic functions
 function add(num1, num2) {
-  return num1 + num2;
+  result = num1 + num2;
+  return result;
 }
 
 function subtract(num1, num2) {
-  return num1 - num2;
+  result = num1 - num2;
+  return result;
 }
 
 function multiply(num1, num2) {
-  return num1 * num2;
+  result = num1 * num2;
+  return result;
 }
 
 function divide(num1, num2) {
-  return num1 / num2;
+  result = num1 / num2;
+  return result;
 }
 
 // Create function operate that takes two numbers and an operator, then based on the operator it calls one of the arithmetic functions.
 function operate(num1, op, num2) {
+  // Perform the operation based on the operator
   switch (op) {
     case "+":
-      return add(num1, num2);
+      result = add(num1, num2);
+      break;
     case "-":
-      return subtract(num1, num2);
+      result = subtract(num1, num2);
+      break;
     case "*":
-      return multiply(num1, num2);
+      result = multiply(num1, num2);
+      break;
     case "/":
-      return divide(num1, num2);
+      result = divide(num1, num2);
+      break;
     default:
-      return null;
+      result = null;
   }
+  display.textContent = result;
 }
 
 // Create function clearAll(), if triggered, reset the entire calculator's state
@@ -77,4 +88,5 @@ function clearAll() {
   number1 = "";
   number2 = "";
   operator = null;
+  result = 0;
 }
