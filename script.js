@@ -4,6 +4,7 @@ let number2 = "";
 let operator = null;
 let result = 0;
 const maxLength = 10;
+let isEqualPressed = false;
 let display = document.querySelector("#display");
 
 /*
@@ -37,6 +38,32 @@ function appendNumberOrDecimal(input) {
     number2 += input;
     display.textContent = number2;
   }
+}
+
+/*
+Create function inputOperator(userOp) to handle operator input.
+1. If the first number (number1) is invalid, do nothing.
+2. If the operator is null, set it to the user's input (userOp).
+3. If the equals operation was just triggered, chain the operation:
+    - Update number1 to the result for a new calculation.
+    - Reset number2, operator, and isEqualPressed.
+*/
+function inputOperator(userOp) {
+  // Exit function if number1 is not a valid number
+  if (number1 === "" || number1 === ".") {
+    return;
+  }
+  // Set operator if it hasn't been set yet
+  if (operator === null) {
+    operator = userOp;
+  } // Handle operation chaining if the equals button has been pressed
+  else if (isEqualPressed === true) {
+    isEqualPressed = false;
+    number1 = result.toString();
+    number2 = "";
+  }
+  // Update operator for the next calculation
+  operator = userOp;
 }
 
 // Create basic arithmetic functions
@@ -89,4 +116,5 @@ function clearAll() {
   number2 = "";
   operator = null;
   result = 0;
+  isEqualPressed = false;
 }
