@@ -8,8 +8,8 @@ let isEqualPressed = false;
 let display = document.querySelector("#display");
 
 /*
-Function populateDisplay() ensures the display text does not overflow.
-1. Shorten the display text if its length exceeds maxLength.
+Controls the calculator display, ensuring the text does not overflow.
+- Trims the display text if its length exceeds the specified maxLength.
 */
 function populateDisplay() {
   if (display.textContent.length > maxLength) {
@@ -17,7 +17,7 @@ function populateDisplay() {
   }
 }
 
-// Create function clearAll(), if triggered, reset the entire calculator's state
+// Resets the calculator's state
 function clearAll() {
   display.textContent = "";
   number1 = "";
@@ -28,7 +28,27 @@ function clearAll() {
 }
 
 /*
-Create function appendNumberOrDecimal(input) to handle number and decimal input.
+Handles delete functionality: 
+- Exits early if the display is empty or if it contains a previous result.
+- Removes the last character from the display.
+- Update either number1 or number2 based on whether an operator is set.
+ */
+function handleDelete() {
+  if (display.textContent === "" || display.textContent === result.toString()) {
+    return;
+  }
+  // Remove the last character from the display
+  display.textContent = display.textContent.slice(0, -1);
+  // Update the appropriate number (number1 or number2)
+  if (operator === null) {
+    number1 = number1.slice(0, -1);
+  } else {
+    number2 = number2.slice(0, -1);
+  }
+}
+
+/*
+appendNumberOrDecimal(input) handles number and decimal input from the user.
 1. Prevent multiple decimals in the display.
 2. If operator is null, append input to number1 and update display, ensuring no overflow.
 3. Otherwise, append input to number2 and update display, checking its length.
@@ -94,11 +114,31 @@ function multiply(num1, num2) {
 
 function divide(num1, num2) {
   if (num2 === 0) {
+    display.textContent = "ERROR!";
     return;
   } else {
     result = num1 / num2;
     return result;
   }
+}
+
+function mod(num1, num2) {
+  if (num2 === 0) {
+    display.textContent = "ERROR!";
+    return;
+  } else {
+    result = num1 % num2;
+  }
+  return result;
+}
+
+function power(num1, num2) {
+  if (result === Infinity || result === -Infinity || isNaN(result)) {
+    display.textContent = "ERROR!";
+    return;
+  }
+  result = Math.pow(num1, num2);
+  return result;
 }
 
 // Create function operate that takes two numbers and an operator, then based on the operator it calls one of the arithmetic functions.
@@ -123,6 +163,12 @@ function operate(num1, op, num2) {
     case "/":
       result = divide(num1, num2);
       break;
+    case "%":
+      result = mod(num1, num2);
+      break;
+    case "^":
+      result = power(num1, num2);
+      break;
     default:
       result = null;
   }
@@ -133,6 +179,7 @@ function operate(num1, op, num2) {
 let numberButtons = document.querySelectorAll(".number");
 let operatorButtons = document.querySelectorAll(".operator");
 let equalsButton = document.querySelector(".equals");
+let deleteButton = document.querySelector(".delete");
 let allClearButton = document.querySelector(".all-clear");
 
 // Add event listeners for number buttons
@@ -157,6 +204,12 @@ operatorButtons.forEach((button) => {
 equalsButton.addEventListener("click", () => {
   isEqualPressed = true;
   operate(number1, operator, number2);
+  populateDisplay();
+});
+
+// Add event listener for delete button
+deleteButton.addEventListener("click", () => {
+  handleDelete();
   populateDisplay();
 });
 
