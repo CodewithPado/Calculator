@@ -114,7 +114,7 @@ function multiply(num1, num2) {
 
 function divide(num1, num2) {
   if (num2 === 0) {
-    display.textContent = "ERROR!";
+    handleInfinityOrNaN();
     return;
   } else {
     result = num1 / num2;
@@ -124,7 +124,7 @@ function divide(num1, num2) {
 
 function mod(num1, num2) {
   if (num2 === 0) {
-    display.textContent = "ERROR!";
+    handleInfinityOrNaN();
     return;
   } else {
     result = num1 % num2;
@@ -134,11 +134,27 @@ function mod(num1, num2) {
 
 function power(num1, num2) {
   if (result === Infinity || result === -Infinity || isNaN(result)) {
-    display.textContent = "ERROR!";
+    handleInfinityOrNaN();
     return;
   }
   result = Math.pow(num1, num2);
   return result;
+}
+
+/* Handles error cases
+ 1. Check if the result is NaN, Infinity, or -Infinity.
+ 2. If so, the function displays an error message and resets current operation variables.
+ 3. Return true if there is an error, false otherwise.
+ */
+function handleInfinityOrNaN(result) {
+  if (result === Infinity || result === -Infinity || isNaN(result)) {
+    display.textContent = "ERROR!";
+    number1 = "";
+    number2 = "";
+    operator = null;
+    return true;
+  }
+  return false;
 }
 
 // Create function operate that takes two numbers and an operator, then based on the operator it calls one of the arithmetic functions.
@@ -172,7 +188,17 @@ function operate(num1, op, num2) {
     default:
       result = null;
   }
-  display.textContent = result;
+  // Handle potential errors and round the result
+  if (!handleInfinityOrNaN(result)) {
+    result = round(result, 3);
+    display.textContent = result;
+  }
+}
+
+// Rounds a number to the specified number of decimal places (default is 3).
+function round(num, decimalPlaces = 3) {
+  const factor = Math.pow(10, decimalPlaces);
+  return Math.round(num * factor) / factor;
 }
 
 // Add dom button variables to handle event listeners
