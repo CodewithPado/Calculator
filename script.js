@@ -244,3 +244,41 @@ allClearButton.addEventListener("click", () => {
   clearAll();
   populateDisplay();
 });
+
+// Add keyboard support
+document.addEventListener("keydown", (e) => {
+  const operators = {
+    "+": "add",
+    "-": "subtract",
+    "*": "multiply",
+    "/": "divide",
+    "%": "mod",
+    "^": "power",
+  };
+  // Handle the keys
+  if (e.key >= "0" && e.key <= "9") {
+    // Handle number inputs
+    appendNumberOrDecimal(e.key);
+    populateDisplay();
+  } else if (e.key === ".") {
+    // Handle decimal point
+    appendNumberOrDecimal(e.key);
+    populateDisplay();
+  } else if (operators.hasOwnProperty(e.key)) {
+    // Handle arithmetic operations
+    inputOperator(e.key);
+    populateDisplay();
+  } else if (e.key === "=" || e.key === "Enter") {
+    // Handle equals operation
+    isEqualPressed = true;
+    operate(number1, operator, number2);
+    populateDisplay();
+  } else if (e.key === "Backspace") {
+    handleDelete();
+    populateDisplay();
+  } else if (e.key === "Escape" || e.key === "c" || e.key === "C") {
+    // Handle clear all
+    clearAll();
+    populateDisplay();
+  }
+});
