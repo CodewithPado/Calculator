@@ -1,1 +1,9 @@
-# Calculator
+- [Calculator](#calculator)
+  - [Table Of Contents](#table-of-contents)
+  - [Objective](#objective)
+  - [Acknowledgement](#acknowledgement)
+  - [View Live Preview](#view-live-preview)
+  - [Built With](#built-with)
+  - [Tools Used](#tools-used)
+  - [Features](#features)
+  - [What I learned:](#what-i-learned)
