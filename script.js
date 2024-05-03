@@ -1,10 +1,11 @@
-// Create user input variables
+// Initialize variables for user input and state tracking
 let number1 = "";
 let number2 = "";
 let operator = null;
 let result = 0;
 const maxLength = 10;
 let isEqualPressed = false;
+let isAfterEquals = false;
 let display = document.querySelector("#display");
 
 /*
@@ -25,21 +26,27 @@ function clearAll() {
   operator = null;
   result = 0;
   isEqualPressed = false;
+  isAfterEquals = false;
 }
 
 /*
-Handles delete functionality: 
-- Exits early if the display is empty or if it contains a previous result.
-- Removes the last character from the display.
-- Update either number1 or number2 based on whether an operator is set.
+Handles delete functionality:
+ - Exits early if the display is empty, contains an error, or matches the previous result.
+ - Removes the last character from the display.
+ - Updates either number1 or number2 based on the set operator.
  */
 function handleDelete() {
-  if (display.textContent === "" || display.textContent === result.toString()) {
+  // Exit if display text is empty, contains an error message, or equals the result
+  if (
+    display.textContent === "" ||
+    display.textContent === "ERROR!" ||
+    display.textContent === result.toString()
+  ) {
     return;
   }
   // Remove the last character from the display
   display.textContent = display.textContent.slice(0, -1);
-  // Update the appropriate number (number1 or number2)
+  // Update number1 or number2 based on whether an operator is set
   if (operator === null) {
     number1 = number1.slice(0, -1);
   } else {
@@ -54,29 +61,40 @@ appendNumberOrDecimal(input) handles number and decimal input from the user.
 3. Otherwise, append input to number2 and update display, checking its length.
 */
 function appendNumberOrDecimal(input) {
+  // Prevent result from being changed via number buttons
+  if (isAfterEquals && input != "") {
+    return;
+  }
+  // Prevent multiple decimals in the display
   if (input === "." && display.textContent.includes(".")) {
     return;
   }
+  // Check if there is an operator
   if (operator === null) {
+    // If number1 is equal to result, return number1 to prevent it from being modified
+    if (number1 === result.toString()) {
+      return number1;
+    }
     // Handle input for the first number
-    if (number1.length < maxLength) {
+    else if (number1.length < maxLength) {
       number1 += input;
       display.textContent = number1;
     }
-  } else if (number2.length < maxLength) {
-    // Handle input for the second number
-    number2 += input;
+  } else {
+    if (number2.length < maxLength)
+      // Handle input for the second number
+      number2 += input;
     display.textContent = number2;
   }
 }
 
 /*
-Create function inputOperator(op) to handle operator input.
+inputOperator(op) processes user input for operators.
 1. If the first number (number1) is invalid, do nothing.
 2. If the operator is null, set it to the user's input (op).
-3. If the equals operation was just triggered, chain the operation:
+3. If number2 is defined and equals operation was triggered, chain the operation:
     - Update number1 to the result for a new calculation.
-    - Reset number2, operator, and isEqualPressed.
+    - Reset number2, operator, isEqualPressed, and isAfterEquals.
 */
 function inputOperator(op) {
   // Exit function if number1 is not a valid number
@@ -86,8 +104,10 @@ function inputOperator(op) {
   // Set operator if it hasn't been set yet
   if (operator === null) {
     operator = op;
-  } // Handle operation chaining if the equals button has been pressed
-  else if (isEqualPressed === true) {
+    // Handle chaining  operations after equals has been triggered
+  } else if (isEqualPressed === true && number2 !== "") {
+    // Prepare for a new calculation
+    isAfterEquals = false;
     isEqualPressed = false;
     number1 = result.toString();
     number2 = "";
@@ -96,7 +116,7 @@ function inputOperator(op) {
   operator = op;
 }
 
-// Create basic arithmetic functions
+// Add basic arithmetic functions
 function add(num1, num2) {
   result = num1 + num2;
   return result;
@@ -141,10 +161,10 @@ function power(num1, num2) {
   return result;
 }
 
-/* Handles error cases
- 1. Check if the result is NaN, Infinity, or -Infinity.
- 2. If so, the function displays an error message and resets current operation variables.
- 3. Return true if there is an error, false otherwise.
+/* Handles Infinity or NaN error cases:
+ 1. Check if the result is Infinity, -Infinity, or NaN.
+ 2. If an error condition is detected, display an error message and reset relevant operation variables.
+ 3. Return true if an error occurred; otherwise, return false.
  */
 function handleInfinityOrNaN(result) {
   if (result === Infinity || result === -Infinity || isNaN(result)) {
@@ -157,7 +177,11 @@ function handleInfinityOrNaN(result) {
   return false;
 }
 
-// Create function operate that takes two numbers and an operator, then based on the operator it calls one of the arithmetic functions.
+/* 
+operate(num1, op, num2) takes 2 number parameters and an operator parameter.
+- The operator will determine which arithmetic operation the two numbers will operate on and then return a result.
+- Round the result to display it, handle any potential errors.
+*/
 function operate(num1, op, num2) {
   // Check all inputs before proceeding
   if (isNaN(num1 || op === "" || isNaN(num2))) {
@@ -195,13 +219,13 @@ function operate(num1, op, num2) {
   }
 }
 
-// Rounds a number to the specified number of decimal places (default is 3).
+// Rounds a number to the specified number of decimal places (default is 3)
 function round(num, decimalPlaces = 3) {
   const factor = Math.pow(10, decimalPlaces);
   return Math.round(num * factor) / factor;
 }
 
-// Add dom button variables to handle event listeners
+// Initialize dom button variables to handle event listeners
 let numberButtons = document.querySelectorAll(".number");
 let operatorButtons = document.querySelectorAll(".operator");
 let equalsButton = document.querySelector(".equals");
@@ -229,6 +253,7 @@ operatorButtons.forEach((button) => {
 // Add event listener for equals button
 equalsButton.addEventListener("click", () => {
   isEqualPressed = true;
+  isAfterEquals = true;
   operate(number1, operator, number2);
   populateDisplay();
 });
@@ -271,6 +296,7 @@ document.addEventListener("keydown", (e) => {
   } else if (e.key === "=" || e.key === "Enter") {
     // Handle equals operation
     isEqualPressed = true;
+    isAfterEquals = true;
     operate(number1, operator, number2);
     populateDisplay();
   } else if (e.key === "Backspace") {
